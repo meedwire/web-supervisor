@@ -1,4 +1,4 @@
-import { createGlobalStyle } from 'styled-components'
+import styled, { createGlobalStyle } from 'styled-components';
 
 export const GlobalStyle = createGlobalStyle`
   * {
@@ -10,6 +10,24 @@ export const GlobalStyle = createGlobalStyle`
   body {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 16px;
-    color: #E1E1E6;
+    color: #e1e1e6;
   }
-`
+`;
+
+export const View = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+export const Text = styled.p`
+  font-size: 20;
+`;
+export const TextInput = styled.input`
+  padding: 10px;
+  margin: 10px;
+  border-radius: 50px;
+  border: 1px solid #dadada;
+  outline: none;
+`;
+
+export const Button = styled.button``;

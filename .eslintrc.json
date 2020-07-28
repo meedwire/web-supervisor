@@ -19,12 +19,16 @@
     "ecmaVersion": 11,
     "sourceType": "module"
   },
-  "plugins": [
-    "react",
-    "prettier",
-    "@typescript-eslint"
-  ],
+  "plugins": ["react", "prettier", "@typescript-eslint"],
   "rules": {
+    "space-before-function-paren": [
+      "error",
+      {
+        "anonymous": "always",
+        "named": "always",
+        "asyncArrow": "always"
+      }
+    ],
     "react/prop-types": "off",
     "import/extensions": [
       "error",
@@ -33,11 +37,13 @@
         "ts": "never",
         "tsx": "never"
       }
-    ]
+    ],
+    "semi": ["error", "always", { "omitLastInOneLineBlock": true }],
+    "comma-dangle": ["error", "only-multiline"]
   },
   "settings": {
     "import/resolver": {
-      "typescript": {} 
+      "typescript": {}
     }
   }
 }
