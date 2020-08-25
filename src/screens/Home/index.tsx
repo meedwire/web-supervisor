@@ -84,9 +84,9 @@ const Home: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+    height: 'calc(100vh - 60px)',
     display: 'grid',
-    alignItems: 'center',
-    justifyItems: 'center',
+    padding: 10,
   },
   boxDevices: {
     display: 'flex',
@@ -135,9 +135,9 @@ const styles = StyleSheet.create({
   buttonCloseModal: {
     padding: 10,
     position: 'absolute',
-    right: -45,
-    top: -13,
-    borderRadius: 50,
+    right: -68,
+    top: -25,
+    borderRadius: 9,
     border: 'none',
     outline: 'none',
     display: 'flex',

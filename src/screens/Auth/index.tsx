@@ -1,12 +1,9 @@
 import React, { useContext } from 'react';
 import { View, Text, TextInput, Button } from '../../styles/GlobalStyle';
 import { ContextAutenticate } from '../../contexts/Auth';
+import { StyleSheet } from '../../utils';
 
-interface StyleSheet {
-  [property: string]: React.CSSProperties;
-}
-
-const styles: StyleSheet = {
+const styles = StyleSheet.create({
   container: {
     height: '100vh',
     justifyContent: 'center',
@@ -18,19 +15,12 @@ const styles: StyleSheet = {
   textLogin: {
     textAlign: 'center',
   },
-  buttonLogin: {
-    padding: 10,
-    margin: '10px 20px',
-    borderRadius: 50,
-    border: 'none',
-    outline: 'none',
-  },
-};
+});
 
 const Auth: React.FC = () => {
   const { authenticate } = useContext(ContextAutenticate);
 
-  function handleAuth () {
+  function handleAuth() {
     authenticate();
   }
 
@@ -40,9 +30,7 @@ const Auth: React.FC = () => {
         <Text style={styles.textLogin}>CLIENTE LOGIN</Text>
         <TextInput placeholder="Usuário" />
         <TextInput placeholder="Senha" type="password" />
-        <Button style={styles.buttonLogin} onClick={handleAuth}>
-          ENTRAR
-        </Button>
+        <Button onClick={handleAuth}>ENTRAR</Button>
       </View>
     </View>
   );

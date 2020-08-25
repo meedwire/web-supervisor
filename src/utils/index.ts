@@ -5,7 +5,7 @@ export type NamedStyles<T> = {
 };
 
 export class StyleSheet {
-  static create<T extends NamedStyles<T> | NamedStyles<any>> (
+  static create<T extends NamedStyles<T> | NamedStyles<any>>(
     styles: T | NamedStyles<T>
   ): T {
     return styles;
