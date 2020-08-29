@@ -2,24 +2,13 @@ import React from 'react';
 import { View, Button, Text, TextInput } from '../../styles/GlobalStyle';
 import { useHistory } from 'react-router-dom';
 import { StyleSheet } from '../../utils';
-import { render } from 'react-dom';
-import { Keyboard } from '../../components/Keyboard';
+import { KeyboardTouch } from '../../utils/KeyboardTouch';
 
 const ParametersDevice: React.FC = () => {
   const history = useHistory();
 
-  function handleKeyboard(e) {
-    const mainElement = document.createElement('div');
-    const root = document.getElementById('root');
-    mainElement.setAttribute('id', 'keyboard');
-    root.appendChild(mainElement);
-    return render(<Keyboard />, mainElement);
-  }
-
-  function hedleCloseKeyboard() {
-    // const root = document.getElementById('root');
-    // const keyborard = document.getElementById('keyboard');
-    // root.removeChild(keyborard);
+  function handleKeyboard(e: React.FocusEvent<HTMLInputElement>) {
+    KeyboardTouch.open(e, 'numeric');
   }
 
   return (
@@ -37,39 +26,37 @@ const ParametersDevice: React.FC = () => {
       <View style={styles.containerContant}>
         <View>
           <Text>Frequência Mínima.</Text>
-          <TextInput
-            onFocus={handleKeyboard}
-            onBlur={hedleCloseKeyboard}
-            placeholder="Hz"
-          />
+          <TextInput onFocus={handleKeyboard} placeholder="Hz" />
         </View>
         <View>
           <Text>Frequência Máxima.</Text>
-          <TextInput placeholder="Hz" />
+          <TextInput onFocus={handleKeyboard} placeholder="Hz" />
         </View>
         <View>
           <Text>Corrente Máxima de Saída.</Text>
-          <TextInput placeholder="Amperes" />
+          <TextInput onFocus={handleKeyboard} placeholder="Amperes" />
         </View>
         <View>
           <Text>Tensão Nominal.</Text>
-          <TextInput placeholder="Volts" />
+          <TextInput onFocus={handleKeyboard} placeholder="Volts" />
         </View>
         <View>
           <Text>Rampa de Aceleração.</Text>
-          <TextInput placeholder="Segundos" />
+          <TextInput onFocus={handleKeyboard} placeholder="Segundos" />
         </View>
         <View>
           <Text>Rampa de desaceleração.</Text>
-          <TextInput placeholder="Segundos" />
+          <TextInput onFocus={handleKeyboard} placeholder="Segundos" />
         </View>
       </View>
-      <Button style={styles.buttonSave} onClick={() => {}}>
-        SALVAR
-      </Button>
-      <Button style={styles.buttonClear} onClick={() => history.push('/')}>
-        LIMPAR
-      </Button>
+      <View style={styles.boxButtons}>
+        <Button style={styles.buttonSave} onClick={() => {}}>
+          SALVAR
+        </Button>
+        <Button style={styles.buttonClear} onClick={() => history.push('/')}>
+          LIMPAR
+        </Button>
+      </View>
     </View>
   );
 };
@@ -79,13 +66,12 @@ const styles = StyleSheet.create({
     height: 'calc(100vh - 60px)',
     display: 'flex',
     flex: 1,
-    justifyContent: 'space-evenly',
-    paddingBottom: 20,
-    paddingTop: 10,
     color: 'white !important',
   },
   boxDeviceId: {
     paddingRight: 10,
+    marginTop: 10,
+    marginBottom: 10,
     paddingLeft: 10,
   },
   textDeviceId: { display: 'flex', flexDirection: 'row' },
@@ -107,16 +93,26 @@ const styles = StyleSheet.create({
   },
   containerContant: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr 1fr',
-    padding: 20,
+    gridTemplateColumns: '1fr 1fr',
+    padding: '10px 20px 0px 20px',
+    marginLeft: 20,
+    marginRight: 20,
+  },
+  boxButtons: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonSave: {
     backgroundColor: 'rgb(0, 255, 0)',
     color: 'white',
+    width: '40%',
   },
   buttonClear: {
     backgroundColor: 'rgb(200, 30, 40)',
     color: 'white',
+    width: '40%',
   },
 });
 

@@ -1,17 +1,82 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet } from '../../utils';
-import { BsBackspace } from 'react-icons/bs';
+import { StyleSheet } from '../../utils/index';
+import { BsBackspace, BsArrowReturnLeft } from 'react-icons/bs';
 import { View, Text, Button } from '../../styles/GlobalStyle';
 
-const Keyboard: React.FC = () => {
-  const [value, setValue] = useState('');
-  //   const [position, setPosition] = useState(0);
-  const numeric = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'];
+interface PropsKeyBoard {
+  e: React.FocusEvent<HTMLInputElement>;
+  type: 'numeric' | 'qwrt';
+}
+
+const Keyboard: React.FC<PropsKeyBoard> = ({ e, type }) => {
+  const [value, setValue] = useState(e.target.value);
+
+  const keyboardType =
+    type === 'numeric'
+      ? [
+          { value: '0', element: '0' },
+          { value: '1', element: '1' },
+          { value: '2', element: '2' },
+          { value: '3', element: '3' },
+          { value: '4', element: '4' },
+          { value: '5', element: '5' },
+          { value: '6', element: '6' },
+          { value: '7', element: '7' },
+          { value: '8', element: '8' },
+          { value: '9', element: '9' },
+          { value: '.', element: '.' },
+          { value: 'backspace', element: <BsBackspace /> },
+        ]
+      : [
+          { value: 'q', element: 'q' },
+          { value: 'w', element: 'w' },
+          { value: 'e', element: 'e' },
+          { value: 'r', element: 'r' },
+          { value: 't', element: 't' },
+          { value: 'y', element: 'y' },
+          { value: 'u', element: 'u' },
+          { value: 'i', element: 'i' },
+          { value: 'o', element: 'o' },
+          { value: 'p', element: 'p' },
+          { value: 'a', element: 'a' },
+          { value: 's', element: 's' },
+          { value: 'd', element: 'd' },
+          { value: 'f', element: 'f' },
+          { value: 'g', element: 'g' },
+          { value: 'h', element: 'h' },
+          { value: 'j', element: 'j' },
+          { value: 'k', element: 'k' },
+          { value: 'l', element: 'l' },
+          { value: '@', element: '@' },
+          { value: 'z', element: 'z' },
+          { value: 'x', element: 'x' },
+          { value: 'c', element: 'c' },
+          { value: 'v', element: 'v' },
+          { value: 'b', element: 'b' },
+          { value: 'n', element: 'n' },
+          { value: 'm', element: 'm' },
+          { value: '.com', element: '.com' },
+          { value: 'backspace', element: <BsBackspace /> },
+        ];
+
   const refInput = useRef<HTMLTextAreaElement>(null);
 
+  function handleClose() {
+    const root = document.getElementById('root');
+    const keyborard = document.getElementById('keyboard');
+    if (root && keyborard) {
+      root.removeChild(keyborard);
+    }
+  }
+
   function handleClick(i: string) {
+    if (i === 'backspace') {
+      handleRemove();
+      return;
+    }
     setValue((prev) => prev + i);
-    refInput.current?.focus();
+
+    return refInput.current && refInput.current.focus();
   }
 
   useEffect(() => {
@@ -23,11 +88,7 @@ const Keyboard: React.FC = () => {
       const position = refInput.current?.selectionStart;
       const arr = value.split('');
       const str = arr.filter((n, i) => i !== position - 1 && n).join('');
-      const range = refInput.current.createTextRange();
-      range.move('character', caretPos);
-      range.select();
       refInput.current.focus();
-      refInput.current.setSelectionRange(position, position);
       setValue(str);
     }
   }
@@ -41,14 +102,32 @@ const Keyboard: React.FC = () => {
           {...{ value }}
           style={styles.input}
         />
-        <Button onClick={handleRemove} style={styles.buttonClear} type="button">
-          <BsBackspace size={'50%'} fill="#a9a9a9" />
+        <Button
+          onClick={() => {
+            e.target.value = value;
+            handleClose();
+          }}
+          style={styles.buttonClear}
+          type="button"
+        >
+          <BsArrowReturnLeft size={'50%'} fill="#a9a9a9" />
         </Button>
       </View>
-      <View style={styles.containerKeyboard}>
-        {numeric.map((n) => (
-          <View onClick={() => handleClick(n)} key={n} style={styles.button}>
-            <Text>{n}</Text>
+      <View
+        style={Object.assign(styles.containerKeyboard, {
+          gridTemplateColumns:
+            type === 'numeric'
+              ? '1fr 1fr 1fr 1fr 1fr'
+              : '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr',
+        })}
+      >
+        {keyboardType.map((keyType, i) => (
+          <View
+            onClick={() => handleClick(keyType.value)}
+            key={keyType.value}
+            style={styles.button}
+          >
+            <Text>{keyType.element}</Text>
           </View>
         ))}
       </View>
@@ -86,10 +165,10 @@ const styles = StyleSheet.create({
     width: '80%',
     outline: 'none',
     marginRight: 10,
+    resize: 'none',
   },
   containerKeyboard: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
     marginTop: 10,
   },
   button: {

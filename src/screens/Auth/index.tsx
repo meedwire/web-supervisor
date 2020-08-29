@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { View, Text, TextInput, Button } from '../../styles/GlobalStyle';
 import { ContextAutenticate } from '../../contexts/Auth';
 import { StyleSheet } from '../../utils';
+import { KeyboardTouch } from '../../utils/KeyboardTouch';
 
 const styles = StyleSheet.create({
   container: {
@@ -24,12 +25,20 @@ const Auth: React.FC = () => {
     authenticate();
   }
 
+  function handleKeyboard(e: React.FocusEvent<HTMLInputElement>) {
+    KeyboardTouch.open(e, 'qwrt');
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.boxContainer}>
         <Text style={styles.textLogin}>CLIENTE LOGIN</Text>
-        <TextInput placeholder="Usuário" />
-        <TextInput placeholder="Senha" type="password" />
+        <TextInput onFocus={handleKeyboard} placeholder="Usuário" />
+        <TextInput
+          onFocus={handleKeyboard}
+          placeholder="Senha"
+          type="password"
+        />
         <Button onClick={handleAuth}>ENTRAR</Button>
       </View>
     </View>

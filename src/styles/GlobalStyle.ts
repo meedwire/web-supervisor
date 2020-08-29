@@ -41,6 +41,8 @@ export const TextInput = styled.input`
   outline: none;
 `;
 
+export const TextArea = styled.textarea``;
+
 export const Button = styled.button`
   padding: 10px;
   margin: 10px 20px;

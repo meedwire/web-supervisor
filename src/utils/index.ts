@@ -1,6 +1,6 @@
 import { CSSProperties } from 'react';
 
-export type NamedStyles<T> = {
+type NamedStyles<T> = {
   [P in keyof T]: CSSProperties;
 };
 
@@ -11,7 +11,3 @@ export class StyleSheet {
     return styles;
   }
 }
-
-/**
- * Creates a StyleSheet style reference from the given object.
- */
