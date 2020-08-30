@@ -8,10 +8,17 @@ import installExtension, {
 
 let mainWindow: Electron.BrowserWindow | null;
 
-function createWindow () {
+function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 480,
+    fullscreen: true,
+    fullscreenable: true,
+    autoHideMenuBar: true,
+    alwaysOnTop: true,
+    titleBarStyle: 'hidden',
+    resizable: false,
+    movable: false,
     webPreferences: {
       nodeIntegration: true,
     },
