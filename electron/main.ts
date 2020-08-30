@@ -14,7 +14,6 @@ function createWindow() {
     height: 480,
     fullscreen: true,
     fullscreenable: true,
-    autoHideMenuBar: true,
     alwaysOnTop: true,
     resizable: false,
     movable: false,
