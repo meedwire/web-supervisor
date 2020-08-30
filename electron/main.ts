@@ -16,7 +16,6 @@ function createWindow() {
     fullscreenable: true,
     autoHideMenuBar: true,
     alwaysOnTop: true,
-    titleBarStyle: 'hidden',
     resizable: false,
     movable: false,
     webPreferences: {
