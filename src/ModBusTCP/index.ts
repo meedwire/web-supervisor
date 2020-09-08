@@ -1,5 +1,5 @@
 import net from 'net';
-import { parseAddress, parseResponse } from './helpers';
+import { parseAddress, parseResponse, makeDataPacket } from './helpers';
 
 interface Rtn {
     ipAddress: string;
@@ -14,9 +14,15 @@ interface Rtn {
         onResponce: (err: null | string, value: number) => void;
         promiseReject: (err: null | string) => void;
         promiseResolve: (value: number) => void;
+        tx: {
+          funcCode: number,
+          tid: number,
+          address: string,
+          hex: string
+        },
       }
     }
-    read: (address: srting, callback: void) => void;
+    read: (address: string, callback: (err: null | string, value: number) => void) => void;
 }
 
 interface Res{
@@ -68,7 +74,7 @@ export default function ModbusTcp(ipAddress: string, port: string, unitId: numbe
 
     rtn.packets[tid].rx = modbusRes;
     rtn.packets[tid].rx.hex = res.toString();
-    if (typeof (rtn.packets[tid].onResponce) === 'function') {
+    if (typeof rtn.packets[tid].onResponce === 'function') {
       rtn.packets[tid].onResponce(err, value);
     }
     if (err) {
@@ -94,7 +100,15 @@ export default function ModbusTcp(ipAddress: string, port: string, unitId: numbe
 
     const tid = getTid();
 
-    const buff = makeDataPacket(tid, 0, 1, funcCode, tempAddress, null, length);
+    const buff = makeDataPacket({
+      transId: tid,
+      protoId: 0,
+      unitId: 1,
+      funcCode,
+      address: tempAddress,
+      data: null,
+      length
+    });
 
     const packet = {
       onResponce: callback,
@@ -127,7 +141,15 @@ export default function ModbusTcp(ipAddress: string, port: string, unitId: numbe
 
     if (funcCode === 5 && value === true) { value = 65280 } // To force a coil on you send FF00 not 0001
 
-    const buff = makeDataPacket(tid, 0, rtn.unitId, funcCode, address, value, length);
+    const buff = makeDataPacket({
+      transId: tid,
+      protoId: 0,
+      unitId: rtn.unitId,
+      funcCode,
+      address,
+      data: value,
+      length
+    });
 
     const packet = {
       onResponce: callback,
@@ -148,8 +170,8 @@ export default function ModbusTcp(ipAddress: string, port: string, unitId: numbe
       rtn.packets[tid].promiseReject = reject;
     });
   };
-  const connect = (callback) => {
-    client.connect(rtn.port, rtn.ipAddress, () => {
+  const connect = (callback: () => void) => {
+    client.connect(Number(rtn.port), rtn.ipAddress, () => {
       if (callback) { callback() }
     });
   };
@@ -160,43 +182,4 @@ export default function ModbusTcp(ipAddress: string, port: string, unitId: numbe
   };
 
   return rtn;
-}
-
-function makeDataPacket(transId, protoId, unitId, funcCode, address, data, length) {
-  if (typeof (data) === 'boolean' && data) { data = 1 }
-  if (typeof (data) === 'boolean' && !data) { data = 0 }
-
-  if (address === 0) { address = 65535 } else { address = address - 1 }
-
-  let dataBytes = 0;
-  if (funcCode === 15) { dataBytes = length }
-  if (funcCode === 16) { dataBytes = length * 2 }
-
-  let bufferLength = 12;
-  if (funcCode === 15 || funcCode === 16) { bufferLength = 13 + dataBytes }
-
-  const byteCount = bufferLength - 6;
-
-  const buf = Buffer.alloc(bufferLength);
-
-  buf.writeUInt16BE(transId, 0);
-  buf.writeUInt16BE(protoId, 2);
-  buf.writeUInt16BE(byteCount, 4);
-  buf.writeUInt8(unitId, 6);
-  buf.writeUInt8(funcCode, 7);
-  buf.writeUInt16BE(address, 8);
-
-  if (funcCode === 1 || funcCode === 2 || funcCode === 3 || funcCode === 4) {
-    buf.writeUInt16BE(length, 10);
-  }
-  if (funcCode === 5 || funcCode === 6) {
-    buf.writeUInt16BE(data, 10);
-  }
-  if (funcCode === 15 || funcCode === 16) {
-    buf.writeInt16BE(length, 10);
-    buf.writeUInt8(dataBytes, 12);
-    buf.writeInt32BE(data, 13);
-  }
-
-  return buf;
 }

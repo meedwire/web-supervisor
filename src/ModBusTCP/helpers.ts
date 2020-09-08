@@ -1,22 +1,32 @@
-interface Rtn{
-    address: number;
-    type: string;
-    length: number;
-    fcRead: number;
-    fcWrite: number;
+interface Rtn {
+  address: number;
+  type: string;
+  length: number;
+  fcRead: number;
+  fcWrite: number;
 }
 
-interface Res{
-    tid: number;
-    pid: number;
-    length: number;
-    unitId: number;
-    funcCode: number;
-    byteCount: number;
-    value: number;
-    exceptionCode: string;
-    hex: string;
-  }
+interface MakeData {
+  transId: number;
+  protoId: number;
+  unitId: number;
+  funcCode: number;
+  address: number;
+  data: number | null;
+  length: number;
+}
+
+interface Res {
+  tid: number;
+  pid: number;
+  length: number;
+  unitId: number;
+  funcCode: number;
+  byteCount: number;
+  value: number;
+  exceptionCode: string;
+  hex: string;
+}
 
 export function parseAddress(address: string): Rtn {
   const rtn: Rtn = {} as Rtn;
@@ -41,9 +51,13 @@ export function parseAddress(address: string): Rtn {
     const range = tempAddress.split('-');
     rtn.length = Number(range[0]) - Number(range[1]);
 
-    if (rtn.length < 0) { tempAddress = range[0] }
+    if (rtn.length < 0) {
+      tempAddress = range[0];
+    }
 
-    if (rtn.length > 0) { tempAddress = range[1] }
+    if (rtn.length > 0) {
+      tempAddress = range[1];
+    }
 
     rtn.length = Math.abs(rtn.length) + 1;
   }
@@ -88,4 +102,70 @@ export function parseResponse(buf: Buffer): Res {
   }
 
   return res;
+}
+
+export function makeDataPacket({
+  transId,
+  protoId,
+  unitId,
+  funcCode,
+  address,
+  data,
+  length,
+}: MakeData): Buffer {
+  if (typeof data === 'boolean' && data) {
+    data = 1;
+  }
+  if (typeof data === 'boolean' && !data) {
+    data = 0;
+  }
+
+  if (address === 0) {
+    address = 65535;
+  } else {
+    address = address - 1;
+  }
+
+  let dataBytes = 0;
+  if (funcCode === 15) {
+    dataBytes = length;
+  }
+  if (funcCode === 16) {
+    dataBytes = length * 2;
+  }
+
+  let bufferLength = 12;
+  if (funcCode === 15 || funcCode === 16) {
+    bufferLength = 13 + dataBytes;
+  }
+
+  const byteCount = bufferLength - 6;
+
+  const buf = Buffer.alloc(bufferLength);
+
+  buf.writeUInt16BE(transId, 0);
+  buf.writeUInt16BE(protoId, 2);
+  buf.writeUInt16BE(byteCount, 4);
+  buf.writeUInt8(unitId, 6);
+  buf.writeUInt8(funcCode, 7);
+  buf.writeUInt16BE(address, 8);
+
+  if (funcCode === 1 || funcCode === 2 || funcCode === 3 || funcCode === 4) {
+    buf.writeUInt16BE(length, 10);
+  }
+  if (funcCode === 5 || funcCode === 6) {
+    if (data) {
+      buf.writeUInt16BE(data, 10);
+    }
+  }
+  if (funcCode === 15 || funcCode === 16) {
+    buf.writeInt16BE(length, 10);
+    buf.writeUInt8(dataBytes, 12);
+
+    if (data) {
+      buf.writeInt32BE(data, 13);
+    }
+  }
+
+  return buf;
 }
