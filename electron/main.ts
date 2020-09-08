@@ -12,11 +12,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 480,
-    fullscreen: true,
-    fullscreenable: true,
-    alwaysOnTop: true,
-    resizable: false,
-    movable: false,
+    // fullscreen: true,
     webPreferences: {
       nodeIntegration: true,
     },
